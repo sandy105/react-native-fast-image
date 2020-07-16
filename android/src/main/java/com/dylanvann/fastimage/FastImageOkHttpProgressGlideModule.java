@@ -3,6 +3,8 @@ package com.dylanvann.fastimage;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.bumptech.glide.Glide;
@@ -18,6 +20,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -44,7 +49,13 @@ public class FastImageOkHttpProgressGlideModule extends LibraryGlideModule {
     ) {
         OkHttpClient client = OkHttpClientProvider
                 .getOkHttpClient()
-                .newBuilder()
+                .hostnameVerifier(new HostnameVerifier() {
+                    @Override
+                    public boolean verify(String s, SSLSession sslSession) {
+                        Log.d("ImageUrl",s );
+                        return true;
+                    }
+                })
                 .addInterceptor(createInterceptor(progressListener))
                 .build();
         OkHttpUrlLoader.Factory factory = new OkHttpUrlLoader.Factory(client);
